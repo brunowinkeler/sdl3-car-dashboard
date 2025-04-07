@@ -1,6 +1,30 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 
+void getDisplayResolution(int &width, int &height)
+{
+    int numDisplays = 0;
+    SDL_DisplayID *displays = SDL_GetDisplays(&numDisplays);
+    if (!displays || numDisplays <= 0)
+    {
+        SDL_Log("Failed to get display list: %s", SDL_GetError());
+        return;
+    }
+
+    SDL_DisplayID display = displays[0]; // Using the first display
+
+    SDL_Rect bounds;
+    if (SDL_GetDisplayBounds(display, &bounds) != true)
+    {
+        SDL_Log("SDL_GetDisplayBounds Error: %s", SDL_GetError());
+        SDL_free(displays);
+        return;
+    }
+    width = bounds.w;
+    height = bounds.h;
+    SDL_free(displays);
+}
+
 int main(int argc, char *argv[])
 {
     // Initialize SDL
@@ -9,6 +33,10 @@ int main(int argc, char *argv[])
         SDL_Log("Failed to initialize SDL: %s", SDL_GetError());
         return 1;
     }
+
+    int widthScreen = 0, heightScreen = 0;
+    getDisplayResolution(widthScreen, heightScreen);
+    SDL_Log("Display resolution after getDisplayResolution: %dx%d", widthScreen, heightScreen);
 
     // Create a fullscreen window
     SDL_Window *window = SDL_CreateWindow("Display PNG", 800, 600, SDL_WINDOW_FULLSCREEN);
@@ -30,7 +58,7 @@ int main(int argc, char *argv[])
     }
 
     // Load the texture from the PNG file
-    SDL_Texture *texture = IMG_LoadTexture(renderer, "assets/images/baby.png");
+    SDL_Texture *texture = IMG_LoadTexture(renderer, "assets/images/lady.jpg");
     if (!texture)
     {
         SDL_Log("Failed to load texture: %s", SDL_GetError());
@@ -41,11 +69,16 @@ int main(int argc, char *argv[])
     }
 
     // Get the dimensions of the texture
-    int width = texture->w;
-    int height = texture->h;
+    int widthImage = texture->w;
+    int heightImage = texture->h;
+
+    float widthScaled = (float)(widthImage * heightScreen) / heightImage;
+
+    int posX = (widthScreen - widthScaled) / 2;
+    int posY = 0;
 
     // Define the position and size of the destination
-    SDL_FRect destination = {0.0f, 0.0f, (float)width, (float)height};
+    SDL_FRect destination = {(float)posX, (float)posY, widthScaled, (float)heightScreen};
 
     // Clear the screen
     SDL_RenderClear(renderer);

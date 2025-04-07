@@ -1,7 +1,7 @@
 # Create your game executable target as usual
-add_executable(helloLoop WIN32 helloLoop.cpp)
-add_executable(helloCallback WIN32 helloCallback.cpp)
-add_executable(helloImage WIN32 helloImage.cpp)
+add_executable(helloLoop helloLoop.cpp)
+add_executable(helloCallback helloCallback.cpp)
+add_executable(helloImage helloImage.cpp)
 
 # Link to the actual SDL3 library.
 target_link_libraries(helloLoop PRIVATE 
