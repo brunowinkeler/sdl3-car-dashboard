@@ -3,6 +3,8 @@
 #include "model/CarState.hpp"
 #include "core/InputHandler.hpp"
 #include "dashboard/SpeedGauge.hpp"
+#include <SDL3_ttf/SDL_ttf.h>
+#include <memory>
 
 namespace car::core
 {
@@ -25,6 +27,7 @@ namespace car::core
 
         model::CarState carState;
         InputHandler inputHandler;
-        dashboard::SpeedGauge speedGauge;
+        std::unique_ptr<dashboard::SpeedGauge> pSpeedGauge;
+        TTF_Font *font = nullptr;
     };
 }

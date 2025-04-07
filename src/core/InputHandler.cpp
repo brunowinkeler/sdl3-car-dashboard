@@ -4,7 +4,7 @@ using namespace car::core;
 using namespace car::model;
 
 InputHandler::InputHandler(CarState &carState)
-    : state(carState)
+    : state(carState), accelerateHeld(false)
 {
 }
 
@@ -14,14 +14,13 @@ void InputHandler::HandleEvent(const SDL_Event &event)
     {
         SDL_Keycode key = event.key.key;
 
+        if (key == SDLK_UP)
+        {
+            accelerateHeld = true;
+        }
+
         switch (key)
         {
-        case SDLK_UP:
-            Accelerate();
-            break;
-        case SDLK_DOWN:
-            Brake();
-            break;
         case SDLK_LEFT:
             ToggleLeftSignal();
             break;
@@ -40,8 +39,18 @@ void InputHandler::HandleEvent(const SDL_Event &event)
         case SDLK_S:
             SimulateFuelDecrease();
             break;
+        case SDLK_DOWN:
+            Brake();
+            break;
         default:
             break;
+        }
+    }
+    else if (event.type == SDL_EVENT_KEY_UP)
+    {
+        if (event.key.key == SDLK_UP)
+        {
+            accelerateHeld = false;
         }
     }
 }
@@ -50,7 +59,7 @@ void InputHandler::Accelerate()
 {
     if (state.speed < 240.0f)
     {
-        state.speed += 2.0f;
+        state.speed += 1.0f;
         state.rpm += 100.0f;
         state.odometer += 0.01f;
     }
@@ -110,5 +119,27 @@ void InputHandler::SimulateFuelDecrease()
     if (state.fuelLevel > 0.0f)
     {
         state.fuelLevel -= 0.5f;
+    }
+}
+
+void InputHandler::Update()
+{
+    if (accelerateHeld)
+    {
+        Accelerate();
+    }
+    else
+    {
+        if (state.speed > 0.0f)
+        {
+            state.speed -= 0.5f;
+            state.rpm -= 50.0f;
+
+            if (state.speed < 0.0f)
+            {
+                state.speed = 0.0f;
+                state.rpm = 800.0f;
+            }
+        }
     }
 }

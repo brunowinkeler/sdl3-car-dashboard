@@ -6,8 +6,7 @@ using namespace car::core;
 
 Application::Application()
     : isRunning(false),
-      inputHandler(carState),
-      speedGauge(carState)
+      inputHandler(carState)
 {
 }
 
@@ -41,6 +40,21 @@ bool Application::Init()
         return false;
     }
 
+    if (TTF_Init() != true)
+    {
+        SDL_Log("Failed to initialize SDL_ttf: %s", SDL_GetError());
+        return false;
+    }
+
+    font = TTF_OpenFont("assets/fonts/BrunoAce-Regular.ttf", 20); // Use uma fonte existente
+    if (!font)
+    {
+        SDL_Log("Failed to load font: %s", SDL_GetError());
+        return false;
+    }
+
+    pSpeedGauge = std::make_unique<dashboard::SpeedGauge>(carState, font);
+
     if (!Renderer::Init("Car Dashboard", 800, 480))
     {
         return false;
@@ -66,19 +80,26 @@ void Application::HandleEvents()
 
 void Application::Update()
 {
+    inputHandler.Update();
 }
 
 void Application::Render()
 {
     Renderer::Clear();
 
-    speedGauge.Render(100, 100, 600, 30); // exemplo
+    pSpeedGauge->Render(50, 50, 600, 30); // exemplo
 
     Renderer::Present();
 }
 
 void Application::CleanUp()
 {
+    if (font)
+    {
+        TTF_CloseFont(font);
+    }
+    TTF_Quit();
+
     Renderer::Destroy();
     SDL_Quit();
 }

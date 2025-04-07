@@ -10,10 +10,12 @@ namespace car::core
     public:
         explicit InputHandler(model::CarState &carState);
 
+        void Update(); // Called every frame
         void HandleEvent(const SDL_Event &event);
 
     private:
         model::CarState &state;
+        bool accelerateHeld;
 
         void Accelerate();
         void Brake();
