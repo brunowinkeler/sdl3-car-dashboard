@@ -6,13 +6,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 # Option to enable or disable building example applications
-option(BUILD_EXAMPLES "Build the examples" ON)
+option(BUILD_EXAMPLES "Build the examples" OFF)
 
 # This assumes the SDL source is available in vendored/SDL
 add_subdirectory(external/SDL3 EXCLUDE_FROM_ALL)
 add_subdirectory(external/SDL3_image EXCLUDE_FROM_ALL)
 add_subdirectory(external/SDL3_ttf EXCLUDE_FROM_ALL)
-# add_subdirectory(src)
+add_subdirectory(src)
 
 # Add the examples directory only if BUILD_EXAMPLES is ON
 if(BUILD_EXAMPLES)
